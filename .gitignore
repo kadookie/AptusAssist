@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Environment files
+.env
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Backend
+aptusassist-backend/target/
+aptusassist-backend/data/*.db
+
+# Frontend
+aptusassist-frontend/node_modules/
+aptusassist-frontend/build/
