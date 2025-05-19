@@ -7,7 +7,7 @@
 # IDE files
 .idea/
 *.iml
-.vscode/
+.vscode
 
 # Backend
 aptusassist-backend/target/
@@ -16,3 +16,4 @@ aptusassist-backend/data/*.db
 # Frontend
 aptusassist-frontend/node_modules/
 aptusassist-frontend/build/
+aptusassist-frontend/dist/

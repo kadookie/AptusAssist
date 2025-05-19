@@ -15,229 +15,179 @@
   </parent>
 
   <properties>
-    <java.version>21</java.version>
-    <version.commons-io>2.4</version.commons-io>
+    <java.version>23</java.version>
+    <maven.compiler.source>23</maven.compiler.source>
+    <maven.compiler.target>23</maven.compiler.target>
+    <lombok.version>1.18.32</lombok.version>
+    <h2.version>2.2.224</h2.version>
+    <jsoup.version>1.17.2</jsoup.version>
+    <okhttp.version>4.12.0</okhttp.version>
+    <telegrambots.version>6.9.0</telegrambots.version>
+    <jaxb.version>4.0.2</jaxb.version>
+    <jaxb-impl.version>4.0.5</jaxb-impl.version>
   </properties>
 
   <dependencies>
+    <!-- Spring Boot -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.module</groupId>
+          <artifactId>jackson-module-jaxb-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.module</groupId>
+          <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.jaxrs</groupId>
+          <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.15.2</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>${version.commons-io}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.17.2</version>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.17.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>4.12.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp-urlconnection</artifactId>
-      <version>4.12.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webflux</artifactId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
+
+    <!-- H2 Database -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- OkHttp -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>${okhttp.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp-urlconnection</artifactId>
+      <version>${okhttp.version}</version>
+    </dependency>
+
+    <!-- Jsoup -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>${jsoup.version}</version>
+    </dependency>
+
+    <!-- Telegram Bot API -->
+    <dependency>
+      <groupId>org.telegram</groupId>
+      <artifactId>telegrambots</artifactId>
+      <version>${telegrambots.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.module</groupId>
+          <artifactId>jackson-module-jaxb-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.module</groupId>
+          <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.jaxrs</groupId>
+          <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.glassfish.jersey.media</groupId>
+          <artifactId>jersey-media-json-jackson</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.glassfish.jersey.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+
+    <!-- Apache Commons -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.12.0</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-logging</artifactId>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.16.1</version>
     </dependency>
+
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
-      <scope>provided</scope>
+      <groupId>io.github.cdimascio</groupId>
+      <artifactId>java-dotenv</artifactId>
+      <version>5.2.2</version>
     </dependency>
-    <dependency>
-      <groupId>org.telegram</groupId>
-      <artifactId>telegrambots-spring-boot-starter</artifactId>
-      <version>6.9.0</version>
-    </dependency>
+
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-            </path>
-          </annotationProcessorPaths>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
           <annotationProcessorPaths>
             <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
             </path>
           </annotationProcessorPaths>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.8.0</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-          <execution>
-            <id>site-javadocs</id>
-            <goals>
-              <goal>javadoc</goal>
-            </goals>
-            <phase>site</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <outputDirectory>${project.build.directory}/javadoc</outputDirectory>
-          <source>21</source>
-          <charset>UTF-8</charset>
-          <encoding>UTF-8</encoding>
-          <docencoding>UTF-8</docencoding>
-          <show>protected</show>
-          <failOnError>true</failOnError>
-          <doclint>all,-missing</doclint>
-          <links>
-            <link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
-            <link>https://javadoc.io/doc/org.jsoup/jsoup/1.17.2/</link>
-            <link>https://javadoc.io/doc/org.springframework/spring-web/3.2.5/</link>
-          </links>
-          <detectLinks>false</detectLinks>
-          <sourceFileExcludes>
-            <exclude>**/test/**</exclude>
-          </sourceFileExcludes>
-          <useStandardDocletOptions>true</useStandardDocletOptions>
-          <skipTests>true</skipTests>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>4.0.0-M13</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-scm-publish-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-          <execution>
-            <id>scm-publish</id>
-            <goals>
-              <goal>publish-scm</goal>
-            </goals>
-            <phase>site-deploy</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <checkoutDirectory>${project.build.directory}/scmpublish</checkoutDirectory>
-          <content>${project.build.directory}/site</content>
-          <pubScmUrl>scm:git:https://github.com/kadookie/AptusAssist.git</pubScmUrl>
-          <scmBranch>gh-pages</scmBranch>
         </configuration>
       </plugin>
     </plugins>
   </build>
 
-  <distributionManagement>
-    <site>
-      <id>github</id>
-      <url>scm:git:https://github.com/kadookie/spa.git</url>
-    </site>
-  </distributionManagement>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <show>protected</show>
-          <doclint>all,-missing</doclint>
-          <skipTests>true</skipTests>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <id>default</id>
-            <reports>
-              <report>javadoc</report>
-              <report>javadoc-no-fork</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.9.0</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
   <scm>
     <connection>scm:git:git@github.com:kadookie/AptusAssist.git</connection>
     <developerConnection>scm:git:git@github.com:kadookie/AptusAssist.git</developerConnection>
-    <url>https://github.com/kadookie/spa</url>
+    <url>https://github.com/kadookie/AptusAssist</url>
   </scm>
 </project>

@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./aptusassist-backend
+    ports:
+      - "${SERVER_PORT:-9090}:${SERVER_PORT:-9090}"
+    environment:
+      - SERVER_PORT=${SERVER_PORT:-9090}
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/aptusassist;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+      - APTUS_BASE_URL=${APTUS_BASE_URL}
+      - APTUS_USERNAME=${APTUS_USERNAME}
+      - APTUS_PASSWORD=${APTUS_PASSWORD}
+      - APTUS_WEEKS=${APTUS_WEEKS}
+      - APTUS_BOOKING_GROUP_ID=${APTUS_BOOKING_GROUP_ID}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+    volumes:
+      - ./aptusassist-backend/data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${SERVER_PORT:-9090}/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - aptusassist-network
+
+  frontend:
+    build:
+      context: ./aptusassist-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    environment:
+      - FRONTEND_PORT=${FRONTEND_PORT:-3000}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - aptusassist-network
+
+networks:
+  aptusassist-network:
+    driver: bridge
