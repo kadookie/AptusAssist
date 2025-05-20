@@ -103,8 +103,8 @@ public class SlotController {
             SlotDbService dbService,
             SlotService bookingService,
             LoginService loginService,
-            @Value("${aptusassist.booking.username}") String username,
-            @Value("${aptusassist.booking.password}") String password,
+            @Value("${APTUS_USERNAME}") String username,
+            @Value("${APTUS_PASSWORD}") String password,
             @Value("${aptusassist.booking.group-id:2}") int bookingGroupId) {
         this.dbService = dbService;
         this.bookingService = bookingService;

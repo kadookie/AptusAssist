@@ -42,7 +42,6 @@ public class LoginService {
 
         try {
             while (redirectCount < MAX_REDIRECTS) {
-                // Include query parameters in the visited URLs check to avoid false positives
                 if (!visitedUrls.add(currentUrl)) {
                     logger.warn("Possible redirect loop detected at: {}. Attempting fallback.", currentUrl);
                     currentUrl = baseUrl + "/AptusPortal/Account/Login";
@@ -55,7 +54,6 @@ public class LoginService {
                     }
                 }
 
-                // logger.debug("Sending GET to: {}", currentUrl);
                 Request request = new Request.Builder()
                         .url(currentUrl)
                         .header("User-Agent",
@@ -74,9 +72,8 @@ public class LoginService {
                         .header("sec-fetch-mode", "navigate")
                         .header("sec-fetch-site", "same-origin")
                         .build();
-                Response tempResponse = client.newCall(request).execute();
-                // cookies.addAll(extractCookies(tempResponse));
 
+                Response tempResponse = client.newCall(request).execute();
                 if (tempResponse.code() == 200) {
                     if (tempResponse.body() == null) {
                         logger.error("Empty response body for URL: {}", currentUrl);
@@ -87,7 +84,6 @@ public class LoginService {
                         return response;
                     }
                     loginPageHtml = tempResponse.body().string();
-                    // logger.debug("Received response HTML, length: {}", loginPageHtml.length());
 
                     Document doc = Jsoup.parse(loginPageHtml);
                     String requestVerificationToken = doc.select("input[name=__RequestVerificationToken]")
@@ -96,8 +92,8 @@ public class LoginService {
                         tempResponse.close();
                         break;
                     } else {
-                        // logger.debug("No RequestVerificationToken found, redirecting to: {}", baseUrl
-                        // + "/AptusPortal");
+                        logger.debug("No RequestVerificationToken found, redirecting to: {}", baseUrl
+                                + "/AptusPortal");
                         currentUrl = baseUrl + "/AptusPortal";
                         redirectCount++;
                         tempResponse.close();
@@ -114,17 +110,16 @@ public class LoginService {
                         return response;
                     }
                     currentUrl = normalizeUrl(resolveUrl(currentUrl, location));
-                    // logger.debug("Redirecting to: {}", currentUrl);
+                    logger.debug("Redirecting to: {}", currentUrl);
                     redirectCount++;
                     tempResponse.close();
                 } else if (tempResponse.code() == 404) {
                     logger.error("404 Not Found for: {}", currentUrl);
-                    // logger.debug("Response headers: {}", tempResponse.headers());
                     if (tempResponse.body() != null) {
                         String errorBody = tempResponse.body().string();
-                        // logger.debug("Error body snippet: {}",
-                        // errorBody.length() > 100 ? errorBody.substring(0, 100) + "..." : errorBody);
-                        // response.setResponseBody(errorBody);
+                        logger.debug("Error body snippet: {}",
+                                errorBody.length() > 100 ? errorBody.substring(0, 100) + "..." : errorBody);
+                        response.setResponseBody(errorBody);
                     }
                     logger.info("Attempting fallback to: {}", baseUrl + "/AptusPortal/Account/Login");
                     currentUrl = baseUrl + "/AptusPortal/Account/Login";
@@ -134,9 +129,9 @@ public class LoginService {
                     logger.error("Unexpected status code: {} for URL: {}", tempResponse.code(), currentUrl);
                     if (tempResponse.body() != null) {
                         String errorBody = tempResponse.body().string();
-                        // logger.debug("Error body snippet: {}",
-                        // errorBody.length() > 100 ? errorBody.substring(0, 100) + "..." : errorBody);
-                        // response.setResponseBody(errorBody);
+                        logger.debug("Error body snippet: {}",
+                                errorBody.length() > 100 ? errorBody.substring(0, 100) + "..." : errorBody);
+                        response.setResponseBody(errorBody);
                     }
                     response.setSuccess(false);
                     response.setStatus("Unexpected status: " + tempResponse.code());
@@ -156,9 +151,9 @@ public class LoginService {
             Document doc = Jsoup.parse(loginPageHtml);
             String passwordSalt = doc.select("input#PasswordSalt").attr("value");
             String requestVerificationToken = doc.select("input[name=__RequestVerificationToken]").attr("value");
-            // logger.debug("Parsed PasswordSalt: {}, RequestVerificationToken: {}",
-            // passwordSalt,
-            // requestVerificationToken);
+            logger.debug("Parsed PasswordSalt: {}, RequestVerificationToken: {}",
+                    passwordSalt,
+                    requestVerificationToken);
 
             if (requestVerificationToken.isEmpty()) {
                 logger.error("Failed to parse __RequestVerificationToken");
@@ -169,7 +164,7 @@ public class LoginService {
             }
 
             String encryptedPassword = PasswordEncoder.encStr(password, passwordSalt);
-            // logger.debug("Encrypted password generated");
+            logger.debug("Encrypted password generated");
 
             RequestBody formBody = new FormBody.Builder()
                     .add("DeviceType", "PC")
@@ -181,8 +176,6 @@ public class LoginService {
                     .add("PasswordSalt", passwordSalt)
                     .build();
 
-            // logger.debug("Sending login POST to: {}",
-            // baseUrl + "/AptusPortal/Account/Login?ReturnUrl=%2fAptusPortal%2f");
             Request loginRequest = new Request.Builder()
                     .url(baseUrl + "/AptusPortal/Account/Login?ReturnUrl=%2fAptusPortal%2f")
                     .post(formBody)
@@ -204,14 +197,12 @@ public class LoginService {
                     .build();
 
             Response loginResponse = client.newCall(loginRequest).execute();
-            // cookies.addAll(extractCookies(loginResponse));
             String finalResponseBody = null;
 
             if (loginResponse.code() == 302) {
                 String location = loginResponse.header("Location");
                 if (location != null) {
                     String finalUrl = normalizeUrl(resolveUrl(currentUrl, location));
-                    // logger.debug("Following redirect to: {}", finalUrl);
                     Request finalRequest = new Request.Builder()
                             .url(finalUrl)
                             .header("User-Agent",
@@ -287,10 +278,10 @@ public class LoginService {
                 logger.error("Login failed, status code: {}", loginResponse.code());
                 if (loginResponse.body() != null) {
                     finalResponseBody = loginResponse.body().string();
-                    // logger.debug("Login error response snippet: {}",
-                    // finalResponseBody.length() > 100 ? finalResponseBody.substring(0, 100) +
-                    // "..."
-                    // : finalResponseBody);
+                    logger.debug("Login error response snippet: {}",
+                            finalResponseBody.length() > 100 ? finalResponseBody.substring(0, 100) +
+                                    "..."
+                                    : finalResponseBody);
                 }
                 response.setSuccess(false);
                 response.setStatus("Login failed: " + loginResponse.code());
@@ -299,11 +290,6 @@ public class LoginService {
 
             response.setResponseBody(finalResponseBody);
             response.setOkHttpClient(client);
-            // response.setCookies(cookies);
-            // logger.debug("Current cookies: {}",
-            // response.getOkHttpClient().cookieJar.toString());
-
-            // logger.debug("Login response cookies: {}", cookies);
 
         } catch (IOException e) {
             logger.error("Error during login for username: {}", username, e);
@@ -328,7 +314,6 @@ public class LoginService {
 
     private String normalizeUrl(String url) {
         String normalized = url.replaceAll("/aptusportal/aptusportal/", "/aptusportal/");
-        // logger.debug("Normalized URL: {} -> {}", url, normalized);
         return normalized;
     }
 }

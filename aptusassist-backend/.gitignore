@@ -2,3 +2,4 @@
 target/
 logs/
 data/*.db
+.env

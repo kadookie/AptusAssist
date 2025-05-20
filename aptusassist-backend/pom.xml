@@ -15,7 +15,7 @@
   </parent>
 
   <properties>
-    <java.version>23</java.version>
+    <java.version>21</java.version>
     <maven.compiler.source>23</maven.compiler.source>
     <maven.compiler.target>23</maven.compiler.target>
     <lombok.version>1.18.32</lombok.version>
@@ -61,11 +61,7 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
+
 
     <!-- H2 Database -->
     <dependency>
@@ -145,9 +141,9 @@
     </dependency>
 
     <dependency>
-      <groupId>io.github.cdimascio</groupId>
-      <artifactId>java-dotenv</artifactId>
-      <version>5.2.2</version>
+      <groupId>me.paulschwarz</groupId>
+      <artifactId>spring-dotenv</artifactId>
+      <version>4.0.0</version>
     </dependency>
 
   </dependencies>
