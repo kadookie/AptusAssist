@@ -113,9 +113,9 @@ public class SlotUpdateScheduler {
             SlotService bookingService,
             SlotDbService dbService,
             NotificationService notificationService,
-            @Value("${aptusassist.booking.username}") String username,
-            @Value("${aptusassist.booking.password}") String password,
-            @Value("${aptusassist.booking.weeks:3}") int weeksToFetch) {
+            @Value("${APTUS_USERNAME}") String username,
+            @Value("${APTUS_PASSWORD}") String password,
+            @Value("${APTUS_WEEKS:3}") int weeksToFetch) {
         this.loginService = loginService;
         this.bookingService = bookingService;
         this.dbService = dbService;

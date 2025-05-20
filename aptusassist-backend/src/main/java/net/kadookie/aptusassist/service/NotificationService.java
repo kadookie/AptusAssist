@@ -55,12 +55,12 @@ public class NotificationService extends TelegramLongPollingBot {
     public NotificationService(
             SlotService bookingService,
             LoginService loginService,
-            @Value("${aptusassist.booking.username}") String username,
-            @Value("${aptusassist.booking.password}") String password,
-            @Value("${aptusassist.booking.group-id:2}") int bookingGroupId,
-            @Value("${telegram.bot-token}") String botToken,
-            @Value("${telegram.bot-username}") String botUsername,
-            @Value("${telegram.chat-ids}") String chatIds) {
+            @Value("${APTUS_USERNAME}") String username,
+            @Value("${APTUS_PASSWORD}") String password,
+            @Value("${APTUS_BOOKING_GROUP_ID}") int bookingGroupId,
+            @Value("${TELEGRAM_BOT_TOKEN}") String botToken,
+            @Value("${TELEGRAM_BOT_USERNAME}") String botUsername,
+            @Value("${TELEGRAM_CHAT_ID}") String chatIds) {
         super(botToken);
         this.bookingService = bookingService;
         this.loginService = loginService;

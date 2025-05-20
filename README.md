@@ -217,7 +217,11 @@ This system has been running in production on a local machine for over a year. W
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-**Disclaimer:** This project is not affiliated with or endorsed by Assa Abloy or the Aptus Portal team. It was developed independently for personal use and operates only on the booking module without interacting with access control or security systems.
+---
+
+## Disclaimer
+
+This project is not affiliated with or endorsed by Assa Abloy or the Aptus Portal team. It was developed independently for personal use and operates only on the booking module without interacting with access control or security systems.
 
 ---
 

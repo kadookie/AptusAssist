@@ -67,7 +67,7 @@ public class SlotService {
      * @param baseUrl Base URL of external booking system (from spa.booking.base-url
      *                property)
      */
-    public SlotService(@Value("${aptusassist.booking.base-url}") String baseUrl) {
+    public SlotService(@Value("${APTUS_BASE_URL}") String baseUrl) {
         this.baseUrl = baseUrl;
         this.client = new OkHttpClient.Builder()
                 .followRedirects(true)

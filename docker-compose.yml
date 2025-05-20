@@ -8,16 +8,18 @@ services:
     environment:
       - SERVER_PORT=${SERVER_PORT:-9090}
       - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/aptusassist;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-      - APTUS_BASE_URL=${APTUS_BASE_URL}
-      - APTUS_USERNAME=${APTUS_USERNAME}
-      - APTUS_PASSWORD=${APTUS_PASSWORD}
-      - APTUS_WEEKS=${APTUS_WEEKS}
-      - APTUS_BOOKING_GROUP_ID=${APTUS_BOOKING_GROUP_ID}
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      - APTUS_BASE_URL=${APTUS_BASE_URL:?err}
+      - APTUS_USERNAME=${APTUS_USERNAME:?err}
+      - APTUS_PASSWORD=${APTUS_PASSWORD:?err}
+      - APTUS_WEEKS=${APTUS_WEEKS:-4}
+      - APTUS_BOOKING_GROUP_ID=${APTUS_BOOKING_GROUP_ID:?err}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:?err}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:?err}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME:?err}
+      - SPRING_PROFILES_ACTIVE=prod
     volumes:
       - ./aptusassist-backend/data:/app/data
+      - ./.env:/app/.env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${SERVER_PORT:-9090}/actuator/health"]
       interval: 30s
@@ -25,20 +27,18 @@ services:
       retries: 3
     networks:
       - aptusassist-network
-
   frontend:
     build:
       context: ./aptusassist-frontend
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "${FRONTEND_PORT:-3737}:80"
     environment:
-      - FRONTEND_PORT=${FRONTEND_PORT:-3000}
+      - FRONTEND_PORT=${FRONTEND_PORT:-3737}
     depends_on:
       backend:
         condition: service_healthy
     networks:
       - aptusassist-network
-
 networks:
   aptusassist-network:
     driver: bridge

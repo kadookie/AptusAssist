@@ -23,7 +23,7 @@ public class LoginService {
     private final String baseUrl;
     private static final int MAX_REDIRECTS = 30;
 
-    public LoginService(@Value("${aptusassist.booking.base-url}") String baseUrl) {
+    public LoginService(@Value("${APTUS_BASE_URL}") String baseUrl) {
         this.baseUrl = baseUrl;
         this.client = new OkHttpClient.Builder()
                 .followRedirects(false)

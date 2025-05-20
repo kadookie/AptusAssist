@@ -103,9 +103,14 @@ public class SlotController {
             SlotDbService dbService,
             SlotService bookingService,
             LoginService loginService,
+
             @Value("${APTUS_USERNAME}") String username,
             @Value("${APTUS_PASSWORD}") String password,
-            @Value("${aptusassist.booking.group-id:2}") int bookingGroupId) {
+            @Value("${APTUS_BOOKING_GROUP_ID}") int bookingGroupId) {
+        // TODO:
+        // if (username.isEmpty()) {
+        // throw new IllegalArgumentException("... is required");
+        // }
         this.dbService = dbService;
         this.bookingService = bookingService;
         this.loginService = loginService;
