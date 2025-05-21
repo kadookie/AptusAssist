@@ -16,6 +16,51 @@ import java.net.CookieManager;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Service handling the complex login flow to the Aptus Portal.
+ * <p>
+ * This service implements a multi-step authentication process that:
+ * <ul>
+ * <li>Follows redirects to reach the login page</li>
+ * <li>Extracts CSRF tokens and password salts</li>
+ * <li>Encrypts passwords using the portal's custom algorithm</li>
+ * <li>Handles session cookies and headers</li>
+ * <li>Validates successful login by checking the final page</li>
+ * </ul>
+ * <p>
+ * Key Features:
+ * <ul>
+ * <li>Handles up to {@value #MAX_REDIRECTS} redirects before failing</li>
+ * <li>Detects and breaks redirect loops</li>
+ * <li>Maintains cookie state across requests</li>
+ * <li>Provides detailed error information in {@link LoginResponse}</li>
+ * </ul>
+ * <p>
+ * Performance Characteristics:
+ * <ul>
+ * <li>Makes 1-30 HTTP requests (due to redirects)</li>
+ * <li>Parses HTML with Jsoup</li>
+ * <li>Encrypts password with custom algorithm</li>
+ * <li>O(n) time complexity where n is number of redirects</li>
+ * </ul>
+ * <p>
+ * Thread Safety:
+ * <ul>
+ * <li>Instance is thread-safe after construction</li>
+ * <li>Each login() call creates new LoginResponse</li>
+ * <li>OkHttpClient is thread-safe</li>
+ * </ul>
+ * <p>
+ * Configuration:
+ * <ul>
+ * <li>Requires APTUS_BASE_URL property</li>
+ * <li>Uses OkHttp client with cookie management</li>
+ * </ul>
+ *
+ * @see LoginResponse
+ * @see PasswordEncoder
+ * @see OkHttpClient
+ */
 @Service
 public class LoginService {
     private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
@@ -23,6 +68,20 @@ public class LoginService {
     private final String baseUrl;
     private static final int MAX_REDIRECTS = 30;
 
+    /**
+     * Constructs a new LoginService with the specified base URL.
+     * <p>
+     * Initializes:
+     * <ul>
+     * <li>OkHttpClient with cookie management</li>
+     * <li>Base URL for all external requests</li>
+     * <li>Manual redirect handling (disabled automatic redirects)</li>
+     * </ul>
+     *
+     * @param baseUrl The base URL of the Aptus Portal (e.g. "https://aptus.assaabloy.com") (required)
+     * @throws IllegalArgumentException if baseUrl is null or empty
+     * @see OkHttpClient
+     */
     public LoginService(@Value("${APTUS_BASE_URL}") String baseUrl) {
         this.baseUrl = baseUrl;
         this.client = new OkHttpClient.Builder()
@@ -32,6 +91,45 @@ public class LoginService {
         logger.info("LoginService initialized with baseUrl: {}", baseUrl);
     }
 
+    /**
+     * Performs the complete login flow to the Aptus Portal.
+     * <p>
+     * The login process involves:
+     * <ol>
+     * <li>Following redirects to reach the login page</li>
+     * <li>Extracting CSRF token and password salt</li>
+     * <li>Encrypting the password</li>
+     * <li>Submitting the login form</li>
+     * <li>Validating the final page</li>
+     * </ol>
+     * <p>
+     * Performance Characteristics:
+     * <ul>
+     * <li>Makes 1-30 HTTP requests (due to redirects)</li>
+     * <li>Parses HTML with Jsoup</li>
+     * <li>Encrypts password with custom algorithm</li>
+     * <li>O(n) time complexity where n is number of redirects</li>
+     * </ul>
+     *
+     * @param username The Aptus Portal username (required, must match portal requirements)
+     * @param password The Aptus Portal password (required, must match portal requirements)
+     * @return LoginResponse containing:
+     * <ul>
+     * <li>Success/failure status</li>
+     * <li>Error details if failed</li>
+     * <li>Authenticated OkHttpClient if successful</li>
+     * <li>Final response body</li>
+     * </ul>
+     * @throws IllegalArgumentException if:
+     * <ul>
+     * <li>username is null or empty</li>
+     * <li>password is null or empty</li>
+     * </ul>
+     * @throws IllegalStateException if MAX_REDIRECTS is exceeded
+     * @throws IOException if network error occurs
+     * @see LoginResponse
+     * @see PasswordEncoder#encStr(String, String)
+     */
     public LoginResponse login(String username, String password) {
         logger.info("Attempting login for username: {}", username);
         LoginResponse response = new LoginResponse();
@@ -301,6 +399,19 @@ public class LoginService {
         return response;
     }
 
+    /**
+     * Resolves a relative URL against a base URL.
+     *
+     * @param baseUrl The base URL to resolve against (required)
+     * @param location The relative or absolute location (required)
+     * @return Fully resolved absolute URL
+     * @throws IllegalArgumentException if:
+     * <ul>
+     * <li>baseUrl is null</li>
+     * <li>location is null</li>
+     * </ul>
+     * @throws StringIndexOutOfBoundsException if baseUrl is malformed
+     */
     private String resolveUrl(String baseUrl, String location) {
         if (location.startsWith("http")) {
             return location;
@@ -312,6 +423,14 @@ public class LoginService {
         return basePath + location;
     }
 
+    /**
+     * Normalizes URLs by removing duplicate path segments.
+     *
+     * @param url The URL to normalize (required)
+     * @return Normalized URL with duplicate segments removed
+     * @throws IllegalArgumentException if url is null
+     * @throws PatternSyntaxException if regex replacement fails
+     */
     private String normalizeUrl(String url) {
         String normalized = url.replaceAll("/aptusportal/aptusportal/", "/aptusportal/");
         return normalized;

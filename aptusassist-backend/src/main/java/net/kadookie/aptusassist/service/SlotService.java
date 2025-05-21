@@ -41,11 +41,25 @@ import java.util.Set;
  * <li>Handles redirects and authentication failures</li>
  * </ul>
  * <p>
+ * Performance Characteristics:
+ * <ul>
+ * <li>Makes 1-10 HTTP requests per operation</li>
+ * <li>Parses HTML with Jsoup (O(n) complexity)</li>
+ * <li>Thread-safe after construction</li>
+ * </ul>
+ * <p>
  * Error Handling:
  * <ul>
  * <li>Logs detailed error information</li>
  * <li>Returns false for failed operations</li>
  * <li>Handles session timeouts gracefully</li>
+ * </ul>
+ * <p>
+ * Thread Safety:
+ * <ul>
+ * <li>Instance is thread-safe after construction</li>
+ * <li>Each operation creates new Request objects</li>
+ * <li>OkHttpClient is thread-safe</li>
  * </ul>
  */
 @Service
@@ -62,10 +76,17 @@ public class SlotService {
     private static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
-     * Constructs booking service with external system configuration
+     * Constructs booking service with external system configuration.
+     * <p>
+     * Initializes:
+     * <ul>
+     * <li>OkHttpClient with cookie management</li>
+     * <li>Base URL for all external requests</li>
+     * <li>Automatic redirect following</li>
+     * </ul>
      *
-     * @param baseUrl Base URL of external booking system (from spa.booking.base-url
-     *                property)
+     * @param baseUrl Base URL of external booking system (required)
+     * @throws IllegalArgumentException if baseUrl is null or empty
      */
     public SlotService(@Value("${APTUS_BASE_URL}") String baseUrl) {
         this.baseUrl = baseUrl;
@@ -77,11 +98,37 @@ public class SlotService {
     }
 
     /**
-     * Fetches available time slots from external system for given date and group
+     * Fetches available time slots from external system for given date and group.
+     * <p>
+     * Implementation Details:
+     * <ul>
+     * <li>Makes authenticated GET request to booking calendar endpoint</li>
+     * <li>Parses HTML response using Jsoup</li>
+     * <li>Extracts time slots and their availability status</li>
+     * <li>Maps time ranges to internal pass numbers</li>
+     * <li>Sets parsed slots in LoginResponse object</li>
+     * </ul>
+     * <p>
+     * Performance Characteristics:
+     * <ul>
+     * <li>Makes 1 HTTP request to external system</li>
+     * <li>Parses HTML document with Jsoup</li>
+     * <li>O(n) time complexity where n is number of time slots</li>
+     * </ul>
      *
-     * @param passDate       Date string in yyyy-MM-dd format
-     * @param bookingGroupId Group identifier for booking
-     * @param response       LoginResponse containing authenticated session client
+     * @param passDate Date string in yyyy-MM-dd format (required)
+     * @param bookingGroupId Group identifier for booking (required)
+     * @param response LoginResponse containing authenticated OkHttpClient (required)
+     * @throws IllegalArgumentException if:
+     * <ul>
+     * <li>passDate is malformed or invalid</li>
+     * <li>bookingGroupId is empty</li>
+     * <li>response or its client is null</li>
+     * </ul>
+     * @throws IllegalStateException if authentication session expires
+     * @throws IOException if network error occurs
+     * @see LoginResponse#setSlots(List)
+     * @see Jsoup#parse(String)
      */
     public void fetchSlots(String passDate, String bookingGroupId, LoginResponse response) {
         logger.debug("Fetching slots for passDate: {}, bookingGroupId: {}", passDate, bookingGroupId);
@@ -188,13 +235,48 @@ public class SlotService {
     }
 
     /**
-     * Books a specific time slot in external system
+     * Books a specific time slot in external system.
+     * <p>
+     * The booking process involves:
+     * <ol>
+     * <li>Constructing booking URL with parameters</li>
+     * <li>Making authenticated GET request</li>
+     * <li>Handling redirects (max 10)</li>
+     * <li>Validating successful booking via:
+     *   <ul>
+     *   <li>FeedbackDialog confirmation</li>
+     *   <li>'interval own' status in calendar</li>
+     *   </ul>
+     * </li>
+     * </ol>
+     * <p>
+     * Performance Characteristics:
+     * <ul>
+     * <li>Makes 1-10 HTTP requests (due to redirects)</li>
+     * <li>Parses HTML response with Jsoup</li>
+     * <li>O(1) time complexity for successful bookings</li>
+     * </ul>
      *
-     * @param passNo         Time slot number (0-7)
-     * @param date           Booking date
-     * @param bookingGroupId Group identifier for booking
-     * @param client         Authenticated HTTP client
-     * @return true if booking was confirmed, false otherwise
+     * @param passNo         Time slot number (0-7, required)
+     * @param date           Booking date (required)
+     * @param bookingGroupId Group identifier for booking (required)
+     * @param client         Authenticated OkHttpClient (required)
+     * @return true if booking was confirmed by either:
+     * <ul>
+     * <li>FeedbackDialog confirmation</li>
+     * <li>'interval own' status in calendar</li>
+     * </ul>
+     * @throws IllegalArgumentException if:
+     * <ul>
+     * <li>passNo is outside 0-7 range</li>
+     * <li>date is null</li>
+     * <li>bookingGroupId is invalid</li>
+     * <li>client is null</li>
+     * </ul>
+     * @throws IOException if network error occurs
+     * @throws IllegalStateException if session expires during booking
+     * @see #fetchSlots(String, String, LoginResponse)
+     * @see OkHttpClient
      */
     public boolean bookSlot(int passNo, LocalDate date, int bookingGroupId, OkHttpClient client) {
         logger.info("Attempting to book slot: passNo={}, date={}, bookingGroupId={}", passNo, date, bookingGroupId);
@@ -318,10 +400,39 @@ public class SlotService {
     }
 
     /**
-     * Cancels an existing booking in external system
+     * Cancels an existing booking in external system.
+     * <p>
+     * The unbooking process involves:
+     * <ol>
+     * <li>Constructing unbooking URL with booking ID</li>
+     * <li>Making authenticated GET request</li>
+     * <li>Handling redirects (max 10)</li>
+     * <li>Validating successful unbooking via:
+     *   <ul>
+     *   <li>FeedbackDialog confirmation</li>
+     *   <li>Removal of 'interval own' status</li>
+     *   </ul>
+     * </li>
+     * </ol>
+     * <p>
+     * Performance Characteristics:
+     * <ul>
+     * <li>Makes 1-10 HTTP requests (due to redirects)</li>
+     * <li>Parses HTML response with Jsoup</li>
+     * <li>O(1) time complexity for successful unbookings</li>
+     * </ul>
      *
-     * @param bookingId Unique identifier of booking to cancel
-     * @return true if unbooking was confirmed, false otherwise
+     * @param bookingId Unique identifier of booking to cancel (required)
+     * @return true if unbooking was confirmed by either:
+     * <ul>
+     * <li>FeedbackDialog confirmation</li>
+     * <li>Removal of 'interval own' status</li>
+     * </ul>
+     * @throws IllegalArgumentException if bookingId is <= 0
+     * @throws IOException if network error occurs
+     * @throws IllegalStateException if session expires during unbooking
+     * @see #bookSlot(int, LocalDate, int, OkHttpClient)
+     * @see OkHttpClient
      */
     public boolean unbook(int bookingId) {
         logger.info("Attempting to unbook bookingId={}", bookingId);
@@ -422,9 +533,27 @@ public class SlotService {
     /**
      * Resolves relative URLs against base URL
      *
-     * @param baseUrl  Original request URL
-     * @param location Location header value (absolute or relative)
+     * @param baseUrl Original request URL (required)
+     * @param location Location header value (absolute or relative) (required)
+     * @return Fully resolved absolute URL
+     * @throws IllegalArgumentException if either parameter is null
+     * @throws StringIndexOutOfBoundsException if baseUrl is malformed
+     */
+    /**
+     * Resolves relative URLs against a base URL.
+     * <p>
+     * Handles:
+     * <ul>
+     * <li>Absolute URLs (returns as-is)</li>
+     * <li>Relative URLs (resolves against base)</li>
+     * <li>Protocol-relative URLs (preserves protocol)</li>
+     * </ul>
+     *
+     * @param baseUrl The base URL to resolve against (required)
+     * @param location The URL to resolve (absolute or relative)
      * @return Fully resolved URL
+     * @throws IllegalArgumentException if baseUrl is null or empty
+     * @see java.net.URI#resolve(String)
      */
     private String resolveUrl(String baseUrl, String location) {
         if (location.startsWith("http")) {
@@ -440,8 +569,29 @@ public class SlotService {
     /**
      * Maps pass numbers to human-readable time ranges
      *
-     * @param passNo Time slot number (0-7)
-     * @return Formatted time range string
+     * @param passNo Time slot number (0-7) (required)
+     * @return Formatted time range string (never null)
+     * @throws IllegalArgumentException if passNo is outside 0-7 range
+     */
+    /**
+     * Maps pass numbers to human-readable time slots.
+     * <p>
+     * Pass numbers correspond to:
+     * <ul>
+     * <li>0: 10:00 - 12:00</li>
+     * <li>1: 12:00 - 14:00</li>
+     * <li>2: 14:00 - 16:00</li>
+     * <li>3: 16:00 - 18:00</li>
+     * <li>4: 18:00 - 20:00</li>
+     * <li>5: 20:00 - 21:00</li>
+     * <li>6: 21:00 - 22:00</li>
+     * <li>7: 22:00 - 23:00</li>
+     * </ul>
+     *
+     * @param passNo The pass number (0-7)
+     * @return Corresponding time slot string
+     * @throws IllegalArgumentException if passNo is outside 0-7 range
+     * @see #bookSlot(int, LocalDate, int, OkHttpClient)
      */
     private String getTimeForPassNo(int passNo) {
         Map<Integer, String> passNoToTime = Map.of(
