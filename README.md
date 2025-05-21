@@ -3,9 +3,6 @@
 ![React](https://img.shields.io/badge/React-18-blue)
 ![PWA](https://img.shields.io/badge/PWA-supported-success)
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
-![Docker Compose](https://img.shields.io/badge/Docker%20Compose-3-blue)
-![Build](https://img.shields.io/badge/build-passing-brightgreen)
-![License](https://img.shields.io/github/license/kadookie/aptusassist)
 
 # AptusAssist
 
@@ -138,51 +135,6 @@ A Spring Scheduler task runs periodically to authenticate with Aptus via a rever
 
 ## Project Structure
 The project is organized into backend and frontend modules, with a clear separation of concerns for maintainability.
-.
-├── aptusassist-backend/
-│ ├── src/main/java/net/kadookie/aptusassist/
-│ │ ├── AptusAssistApplication.java
-│ │ ├── config/
-│ │ │ ├── TelegramBotConfig.java
-│ │ │ └── WebConfig.java
-│ │ ├── controller/
-│ │ │ └── SlotController.java
-│ │ ├── dto/
-│ │ │ └── LoginResponse.java
-│ │ ├── entity/
-│ │ │ └── Slot.java
-│ │ ├── repository/
-│ │ │ └── SlotRepository.java
-│ │ ├── scheduler/
-│ │ │ └── SlotUpdateScheduler.java
-│ │ ├── service/
-│ │ │ ├── LoginService.java
-│ │ │ ├── NotificationService.java
-│ │ │ ├── SlotDbService.java
-│ │ │ └── SlotService.java
-│ │ └── util/
-│ │ └── PasswordEncoder.java
-│ ├── src/main/resources/
-│ │ ├── application.properties
-│ │ └── schema.sql
-│ └── Dockerfile
-├── aptusassist-frontend/
-│ ├── src/
-│ │ ├── App.jsx
-│ │ ├── components/
-│ │ │ └── SpaBookingCalendar.jsx
-│ │ └── utils/
-│ │ └── date.js
-│ ├── public/
-│ │ ├── favicon.svg
-│ │ ├── icon-192.png
-│ │ └── icon-512.png
-│ ├── Dockerfile
-│ ├── index.html
-│ └── vite.config.ts
-├── docker-compose.yml
-├── LICENSE
-└── README.md
 
 ---
 
@@ -212,10 +164,10 @@ git clone https://github.com/kadookie/aptusassist.git
 ```env
 SERVER_PORT=9090
 FRONTEND_PORT=3737
-APTUS_BASE_URL=https://your_provider.aptustotal.se 
+APTUS_BASE_URL=https://your_provider.aptustotal.se # See note below
 APTUS_USERNAME=your_username
 APTUS_PASSWORD=your_password
-APTUS_WEEKS=3 	# number of weeks to shadow(current and ahead)
+APTUS_WEEKS=3 	# number of weeks to shadow (current and ahead)
 APTUS_BOOKING_GROUP_ID=2  # See note below
 TELEGRAM_BOT_TOKEN=your_token
 TELEGRAM_CHAT_ID=your_chat_id
