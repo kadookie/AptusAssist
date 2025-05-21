@@ -70,12 +70,12 @@ public class WebConfig implements WebMvcConfigurer {
 @Override
 public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/book")
-            .allowedOrigins("http://localhost:3737")
+            .allowedOrigins("http://localhost")
             .allowedMethods("POST")
             .allowedHeaders("Content-Type");
 
     registry.addMapping("/slots")
-            .allowedOrigins("http://localhost:3737")
+            .allowedOrigins("http://localhost")
             .allowedMethods("GET")
             .allowedHeaders("Content-Type");
 }

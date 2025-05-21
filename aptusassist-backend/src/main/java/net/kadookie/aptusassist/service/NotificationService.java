@@ -86,7 +86,7 @@ public class NotificationService extends TelegramLongPollingBot {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    /** Mapping of pass numbers to time slots, copied from BookingController */
+    /** Mapping of pass numbers to time slots*/
     private static final Map<Integer, String> PASS_NO_TO_TIME = new LinkedHashMap<>();
     static {
         PASS_NO_TO_TIME.put(1, "10:00 - 12:00");
@@ -250,11 +250,8 @@ public class NotificationService extends TelegramLongPollingBot {
                 if (messageText.startsWith("/start book_")) {
                     handleBookCommand(messageText.replace("/start ", ""), chatId);
                 } else if (messageText.equals("/start")) {
-                    sendMessage(chatId, "Welcome! Click a 'Book Now' button to book a slot.");
+                    sendMessage(chatId, "I am online and will now monitor for new slots.");
                     logger.info("Handled /start command for chatId: {}", chatId);
-                } else if (messageText.equals("/test")) {
-                    sendMessage(chatId, "Test command received!");
-                    logger.info("Handled /test command for chatId: {}", chatId);
                 } else {
                     logger.info("Unhandled message: {} from chatId: {}", messageText, chatId);
                 }

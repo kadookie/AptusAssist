@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * REST controller for spa booking operations.
+ * REST controller for booking operations.
  * <p>
  * Provides endpoints for:
  * <ul>
@@ -90,7 +90,7 @@ public class SlotController {
     }
 
     /**
-     * Constructs a new BookingController with required dependencies
+     * Constructs a new SlotController with required dependencies
      *
      * @param dbService      Service for database operations
      * @param bookingService Service for booking business logic

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Main entry point for the Spa Booking Application.
+ * Main entry point for the AptusAssist Application.
  * <p>
  * Architecture Overview:
  * <ul>

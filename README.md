@@ -4,11 +4,6 @@
 ![PWA](https://img.shields.io/badge/PWA-supported-success)
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-3-blue)
-![Maven](https://img.shields.io/badge/Maven-3.9.6-blue)
-![H2 Database](https://img.shields.io/badge/H2-Database-lightgrey)
-![JUnit 5](https://img.shields.io/badge/JUnit-5-red)
-![OkHttp](https://img.shields.io/badge/OkHttp-4.x-green)
-![Jsoup](https://img.shields.io/badge/Jsoup-1.15.3-orange)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![License](https://img.shields.io/github/license/kadookie/aptusassist)
 
@@ -27,7 +22,9 @@ This project solves a real-world problem while serving as a professional portfol
 ---
 
 ## Motivation
-The Aptus Portal’s lack of a public API and cumbersome manual booking process, requiring multiple browser-based steps, create a frustrating user experience. AptusAssist solves this by reverse-engineering a complex login flow (handling multiple redirects, session and auth cookies, CSRF tokens, and password salting) to automate slot monitoring and booking, delivering a modern interface and Telegram integration. The official “Aptus Home” mobile app, with a 1.2-star rating on the App Store, underscores the need for a more usable, automation-friendly alternative.
+The Aptus Portal’s lack of a public API and cumbersome manual booking process, requiring multiple browser-based steps, create a frustrating user experience. AptusAssist solves this by reverse-engineering a complex login flow (handling multiple redirects, session and auth cookies, CSRF tokens, and password salting) to automate slot monitoring and booking, delivering a modern interface and Telegram integration. The official “Aptus Home” mobile app, with a 1.2-star rating, underscores the need for a more usable, automation-friendly alternative.
+
+The system’s clunky UI is frequently criticized in App Store reviews and resident forums, explaining why a personal hack became AptusAssist and is made public.
 
 AptusAssist operates strictly within the booking module, ensuring no interaction with Assa Abloy’s security systems.
 
@@ -89,7 +86,7 @@ A Spring Scheduler task runs periodically to authenticate with Aptus via a rever
 
 ## DevOps
 - Fully Dockerized for consistency and reproducibility.
-- Runs as a containerized service on a local Ubuntu machine, designed for 24/7 uptime with minimal resource usage.
+- Runs as a containerized service, designed for 24/7 uptime with minimal resource usage.
 - Includes:
   - `Dockerfile` with production-level build setup
   - Volume-mounted persistent storage for slot data
@@ -128,12 +125,12 @@ A Spring Scheduler task runs periodically to authenticate with Aptus via a rever
 **Build & DevOps:**
 - Maven
 - Docker
-- Ubuntu (local deployment environment)
+- Linux (local deployment environment)
 - Javadoc
 
 ---
 
-## 📷 Screenshots
+## Screenshots
 - PWA calendar UI for booking slots on smart displays and mobile devices.
 - Telegram notification with inline booking button, showcasing the interactive booking flow.
 
@@ -189,11 +186,113 @@ The project is organized into backend and frontend modules, with a clear separat
 
 ---
 
-## TODO
-- [ ] Add dark mode to web interface
-- [ ] Make polling interval configurable via UI
-- [ ] Add admin UI for monitoring/logs
-- [ ] Build a Home Assistant plugin
+## Usage
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- Aptus Portal account
+- Telegram bot token and chat ID
+
+---
+
+### Clone Repository
+
+```bash
+git clone https://github.com/kadookie/aptusassist.git
+```
+
+---
+
+### Configure Environment Variables
+
+1. Rename `.env.example` to `.env`
+2. Update `.env` with your actual values:
+
+```env
+SERVER_PORT=9090
+FRONTEND_PORT=3737
+APTUS_BASE_URL=https://your_provider.aptustotal.se 
+APTUS_USERNAME=your_username
+APTUS_PASSWORD=your_password
+APTUS_WEEKS=3 	# number of weeks to shadow(current and ahead)
+APTUS_BOOKING_GROUP_ID=2  # See note below
+TELEGRAM_BOT_TOKEN=your_token
+TELEGRAM_CHAT_ID=your_chat_id
+TELEGRAM_BOT_USERNAME=@your_bot_name
+```
+> To find `APTUS_BASE_URL`:  
+> Go to your Aptus Portal and check the URL in your browser. Should be something like https://hsb.aptustotal.se
+
+> To find `APTUS_BOOKING_GROUP_ID`:  
+> Log in to your Aptus Portal, go to the calendar view of your amenity (e.g., **Tvättstuga 1**, or **Bastu**) and check the URL in your browser for bookingGroupId=.
+
+> To get `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`:  
+> Create a new bot with [BotFather](https://t.me/BotFather) on Telegram.
+> Send /start to your bot.
+
+---
+
+### Run the Application
+
+```bash
+docker compose up -d
+```
+
+---
+
+### Access the UI
+
+Open your browser at:
+
+```
+http://localhost:3737
+```
+
+> Replace `localhost` with your server's address if deploying remotely.
+
+---
+
+### Install on Device
+
+Install the PWA for a native-like experience on mobile by adding to desktop.
+
+---
+
+### Troubleshooting
+
+Check logs with:
+
+```bash
+docker compose logs
+```
+
+Still stuck? See the [GitHub Issues](https://github.com/kadookie/aptusassist/issues) page for help.
+
+---
+
+## Contributors
+
+### Want to Contribute?
+
+Contributions are **welcome and encouraged**!
+
+If you'd like to help:
+
+1. **Fork the repo**
+2. **Create a feature branch**
+3. **Submit a pull request**
+4. **Discuss in GitHub Issues**
+
+---
+
+### Ideas for Contribution
+
+- Adding features
+- Improving UI/UX or accessibility
+- Adding dark mode support
+- Creating Home Assistant integration
+- Enhancing test coverage
 
 ---
 

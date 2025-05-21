@@ -14,7 +14,7 @@ import java.util.Map;
  * <li>Returned by
  * {@link net.kadookie.aptusassist.data.service.LoginService}</li>
  * <li>Passed to
- * {@link net.kadookie.aptusassist.data.service.BookingService}</li>
+ * {@link net.kadookie.aptusassist.data.service.SlotService}</li>
  * <li>Serialized to JSON for API responses</li>
  * </ul>
  * <p>
