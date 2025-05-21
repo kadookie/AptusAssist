@@ -3,23 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-const formatDate = (dateStr, format) => {
-  const date = new Date(dateStr);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  if (format === 'dd MMM') {
-    return `${date.getDate()} ${months[date.getMonth()]}`;
-  }
-  return dateStr;
-};
-
-const getDefaultPassDate = () => {
-  const today = new Date();
-  const day = today.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  today.setDate(today.getDate() + diff);
-  return today.toISOString().split('T')[0]; 
-};
+import { formatDate, getDefaultPassDate } from '../utils/date';
 
 const SpaBookingCalendar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,7 +14,7 @@ const SpaBookingCalendar = () => {
       return paramDate;
     }
     return getDefaultPassDate();
-    });
+  });
   const freeOnly = searchParams.get('freeOnly') === 'true';
   const [data, setData] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -39,16 +23,13 @@ const SpaBookingCalendar = () => {
   useEffect(() => {
     // Sync passDate with searchParams
     if (searchParams.get('passDate') !== passDate) {
-      console.debug(`Updating searchParams to passDate: ${passDate}`);
       setSearchParams({ passDate, freeOnly });
     }
 
     const fetchData = async () => {
       setError(null);
-      console.debug(`Fetching slots for passDate: ${passDate}`);
       try {
-        const url = `http://localhost:9090/slots?passDate=${encodeURIComponent(passDate)}`;
-        console.debug(`Sending request to: ${url}`);
+        const url = `/slots?passDate=${encodeURIComponent(passDate)}`;
         const res = await axios.get(url);
         setData(res.data);
       } catch (err) {
@@ -63,13 +44,13 @@ const SpaBookingCalendar = () => {
 
   const handleSlotClick = async (passNo, passDate) => {
     try {
-      console.debug(`Booking slot: passNo=${passNo}, passDate=${passDate}`);
-      const response = await axios.post('http://localhost:9090/book', null, {
+      const response = await axios.post('/book', null, {
         params: { passNo, passDate }
       });
+
       if (response.data.status === 'success') {
         toast.success('Slot booked successfully!');
-        const url = `http://localhost:9090/slots?passDate=${encodeURIComponent(passDate)}`;
+        const url = `/slots?passDate=${encodeURIComponent(passDate)}`;
         const res = await axios.get(url);
         setData(res.data);
       } else {
@@ -90,7 +71,6 @@ const SpaBookingCalendar = () => {
       console.warn(`Invalid newPassDate: ${newPassDate}. Using current passDate.`);
       return;
     }
-    console.debug(`Navigating to passDate: ${newPassDate}`);
     setPassDate(newPassDate);
   };
 
@@ -118,9 +98,8 @@ const SpaBookingCalendar = () => {
         <div className="flex justify-between items-center">
           <button
             onClick={() => navigateWeek(data?.prevWeekDate)}
-            className={`px-3 py-1 rounded-md font-medium text-gray-700 bg-gray-300 hover:bg-gray-400 transition-colors ${
-              !data?.prevWeekDate ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`px-3 py-1 rounded-md font-medium text-gray-700 bg-gray-300 hover:bg-gray-400 transition-colors ${!data?.prevWeekDate ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             disabled={!data?.prevWeekDate}
           >
             Previous Week
@@ -128,9 +107,8 @@ const SpaBookingCalendar = () => {
           <span className="text-base font-semibold">Week {data?.currentWeek}</span>
           <button
             onClick={() => navigateWeek(data?.nextWeekDate)}
-            className={`px-3 py-1 rounded-md font-medium text-gray-700 bg-gray-300 hover:bg-gray-400 transition-colors ${
-              !data?.nextWeekDate ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`px-3 py-1 rounded-md font-medium text-gray-700 bg-gray-300 hover:bg-gray-400 transition-colors ${!data?.nextWeekDate ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             disabled={!data?.nextWeekDate}
           >
             Next Week
@@ -147,13 +125,12 @@ const SpaBookingCalendar = () => {
               .map((slot) => (
                 <div
                   key={slot.passNo}
-                  className={`mt-2 p-2 rounded cursor-pointer flex justify-center items-center ${
-                    slot.status === 'free'
-                      ? 'bg-green-500 text-white hover:bg-green-600'
-                      : slot.status === 'own'
+                  className={`mt-2 p-2 rounded cursor-pointer flex justify-center items-center ${slot.status === 'free'
+                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    : slot.status === 'own'
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-300 text-gray-700 cursor-not-allowed'
-                  }`}
+                    }`}
                   onClick={() => slot.status === 'free' && handleSlotClick(slot.passNo, slot.passDate)}
                 >
                   <span>{slot.time}</span>
