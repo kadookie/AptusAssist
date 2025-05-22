@@ -132,6 +132,7 @@ A Spring Scheduler task runs periodically to authenticate with Aptus via a rever
 - PWA calendar UI for booking slots on smart displays and mobile devices.
 ![Telegram notification](https://i.postimg.cc/zXGrLmN9/notification.jpg)
 - Telegram notification with inline booking button, showcasing the interactive booking flow.
+![Telegram notification](https://i.postimg.cc/zXGrLmN9/notification.jpg)
 
 ---
 
