@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Telegram bot service for spa booking notifications and commands.
+ * Telegram bot service for booking notifications and commands.
  * <p>
  * This service extends TelegramLongPollingBot to:
  * <ul>
- * <li>Send notifications when spa slots become available</li>
+ * <li>Send notifications when slots become available</li>
  * <li>Handle booking commands via inline keyboard</li>
  * <li>Process callback queries for instant booking</li>
  * <li>Provide basic bot commands (/start, /test)</li>
@@ -86,7 +86,7 @@ public class NotificationService extends TelegramLongPollingBot {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    /** Mapping of pass numbers to time slots*/
+    /** Mapping of pass numbers to time slots */
     private static final Map<Integer, String> PASS_NO_TO_TIME = new LinkedHashMap<>();
     static {
         PASS_NO_TO_TIME.put(1, "10:00 - 12:00");
@@ -102,13 +102,13 @@ public class NotificationService extends TelegramLongPollingBot {
      * Constructs a new NotificationService with all required dependencies.
      *
      * @param bookingService Slot booking service
-     * @param loginService Portal authentication service
-     * @param username Aptus Portal username
-     * @param password Aptus Portal password
-     * @param bookingGroupId Group ID for spa bookings
-     * @param botToken Telegram bot API token
-     * @param botUsername Telegram bot username (must start with @)
-     * @param chatIds Comma-separated list of Telegram chat IDs to notify
+     * @param loginService   Portal authentication service
+     * @param username       Aptus Portal username
+     * @param password       Aptus Portal password
+     * @param bookingGroupId Group ID for bookings
+     * @param botToken       Telegram bot API token
+     * @param botUsername    Telegram bot username (must start with @)
+     * @param chatIds        Comma-separated list of Telegram chat IDs to notify
      * @throws IllegalArgumentException if any required parameter is invalid
      */
     public NotificationService(
@@ -144,6 +144,7 @@ public class NotificationService extends TelegramLongPollingBot {
 
     /**
      * {@inheritDoc}
+     * 
      * @return The bot's username configured during construction
      */
     @Override
@@ -168,12 +169,14 @@ public class NotificationService extends TelegramLongPollingBot {
      * <li>O(n) time complexity where n is number of chat IDs</li>
      * </ul>
      *
-     * @param date   The date of the slot in yyyy-MM-dd format (required, must be valid date)
+     * @param date   The date of the slot in yyyy-MM-dd format (required, must be
+     *               valid date)
      * @param passNo The pass number (1-7) (required, must be valid pass number)
-     * @param time   The human-readable time slot (e.g., "12:00 - 14:00") (required, must match passNo)
+     * @param time   The human-readable time slot (e.g., "12:00 - 14:00") (required,
+     *               must match passNo)
      * @throws IllegalArgumentException if any parameter is null or invalid
-     * @throws IllegalStateException if bot token is invalid
-     * @throws TelegramApiException if message sending fails
+     * @throws IllegalStateException    if bot token is invalid
+     * @throws TelegramApiException     if message sending fails
      * @see #createBookNowKeyboard(String, String)
      * @see SendMessage
      */
@@ -202,7 +205,7 @@ public class NotificationService extends TelegramLongPollingBot {
      * <p>
      * The callback data format is: "book_<date>_<passNo>"
      *
-     * @param date The booking date in yyyy-MM-dd format (required)
+     * @param date   The booking date in yyyy-MM-dd format (required)
      * @param passNo The pass number (1-7) (required)
      * @return Configured InlineKeyboardMarkup with single "Book Now" button
      * @throws IllegalArgumentException if date or passNo are null/invalid
@@ -281,8 +284,8 @@ public class NotificationService extends TelegramLongPollingBot {
      * </ol>
      *
      * @param command The booking command in format "book_<date>_<passNo>"
-     * @param chatId The Telegram chat ID to send responses to (required)
-     * @throws NumberFormatException if passNo is invalid
+     * @param chatId  The Telegram chat ID to send responses to (required)
+     * @throws NumberFormatException  if passNo is invalid
      * @throws DateTimeParseException if date is invalid
      * @see SlotService#bookSlot(int, LocalDate, int, OkHttpClient)
      * @see LoginService#login(String, String)
@@ -313,7 +316,7 @@ public class NotificationService extends TelegramLongPollingBot {
             }
 
             String time = PASS_NO_TO_TIME.getOrDefault(passNo, "Unknown");
-            String confirmation = String.format("📅 Slot booked!\nDate: %s\n⏰ Time: %s", dateStr, time);
+            String confirmation = String.format("Slot booked!\n📅  %s\n⏰  %s", dateStr, time);
             SendMessage message = new SendMessage();
             message.setChatId(chatId);
             message.setText(confirmation);
@@ -330,10 +333,10 @@ public class NotificationService extends TelegramLongPollingBot {
      * <p>
      * Logs the error both to system logs and to the user via Telegram.
      *
-     * @param chatId The Telegram chat ID to send to (required)
+     * @param chatId       The Telegram chat ID to send to (required)
      * @param errorMessage The error message to display (required)
      * @throws IllegalArgumentException if chatId or errorMessage are null
-     * @throws TelegramApiException if message sending fails
+     * @throws TelegramApiException     if message sending fails
      */
     private void sendErrorMessage(String chatId, String errorMessage) {
         SendMessage message = new SendMessage();
@@ -353,9 +356,9 @@ public class NotificationService extends TelegramLongPollingBot {
      * Wraps Telegram API call with error handling and logging.
      *
      * @param chatId The Telegram chat ID to send to (required)
-     * @param text The message text to send (required)
+     * @param text   The message text to send (required)
      * @throws IllegalArgumentException if chatId or text are null
-     * @throws TelegramApiException if message sending fails
+     * @throws TelegramApiException     if message sending fails
      * @see SendMessage
      */
     private void sendMessage(String chatId, String text) {

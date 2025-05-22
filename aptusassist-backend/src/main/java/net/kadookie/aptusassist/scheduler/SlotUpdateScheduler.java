@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Scheduled task for periodically updating spa booking slot availability.
+ * Scheduled task for periodically updating booking slot availability.
  * <p>
  * Scheduling Behavior:
  * <ul>

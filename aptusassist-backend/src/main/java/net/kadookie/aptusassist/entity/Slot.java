@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 /**
- * Entity representing a bookable time slot in the spa system.
+ * Entity representing a bookable time slot in the system.
  * <p>
  * Persistence Details:
  * <ul>
@@ -54,7 +54,7 @@ public class Slot {
     /**
      * Time slot number (1-7)
      * <p>
-     * Maps to specific time periods (see SpaController.PASS_NO_TO_TIME)
+     * Maps to specific time periods (see SlotController.PASS_NO_TO_TIME)
      * </p>
      * <p>
      * Special value 0 indicates morning slot (varies by day)

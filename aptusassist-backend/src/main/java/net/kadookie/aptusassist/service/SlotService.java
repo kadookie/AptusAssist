@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Core service for spa booking operations and external system integration.
+ * Core service for booking operations and external system integration.
  * <p>
  * Responsibilities:
  * <ul>
@@ -116,17 +116,18 @@ public class SlotService {
      * <li>O(n) time complexity where n is number of time slots</li>
      * </ul>
      *
-     * @param passDate Date string in yyyy-MM-dd format (required)
+     * @param passDate       Date string in yyyy-MM-dd format (required)
      * @param bookingGroupId Group identifier for booking (required)
-     * @param response LoginResponse containing authenticated OkHttpClient (required)
+     * @param response       LoginResponse containing authenticated OkHttpClient
+     *                       (required)
      * @throws IllegalArgumentException if:
-     * <ul>
-     * <li>passDate is malformed or invalid</li>
-     * <li>bookingGroupId is empty</li>
-     * <li>response or its client is null</li>
-     * </ul>
-     * @throws IllegalStateException if authentication session expires
-     * @throws IOException if network error occurs
+     *                                  <ul>
+     *                                  <li>passDate is malformed or invalid</li>
+     *                                  <li>bookingGroupId is empty</li>
+     *                                  <li>response or its client is null</li>
+     *                                  </ul>
+     * @throws IllegalStateException    if authentication session expires
+     * @throws IOException              if network error occurs
      * @see LoginResponse#setSlots(List)
      * @see Jsoup#parse(String)
      */
@@ -243,10 +244,10 @@ public class SlotService {
      * <li>Making authenticated GET request</li>
      * <li>Handling redirects (max 10)</li>
      * <li>Validating successful booking via:
-     *   <ul>
-     *   <li>FeedbackDialog confirmation</li>
-     *   <li>'interval own' status in calendar</li>
-     *   </ul>
+     * <ul>
+     * <li>FeedbackDialog confirmation</li>
+     * <li>'interval own' status in calendar</li>
+     * </ul>
      * </li>
      * </ol>
      * <p>
@@ -262,19 +263,19 @@ public class SlotService {
      * @param bookingGroupId Group identifier for booking (required)
      * @param client         Authenticated OkHttpClient (required)
      * @return true if booking was confirmed by either:
-     * <ul>
-     * <li>FeedbackDialog confirmation</li>
-     * <li>'interval own' status in calendar</li>
-     * </ul>
+     *         <ul>
+     *         <li>FeedbackDialog confirmation</li>
+     *         <li>'interval own' status in calendar</li>
+     *         </ul>
      * @throws IllegalArgumentException if:
-     * <ul>
-     * <li>passNo is outside 0-7 range</li>
-     * <li>date is null</li>
-     * <li>bookingGroupId is invalid</li>
-     * <li>client is null</li>
-     * </ul>
-     * @throws IOException if network error occurs
-     * @throws IllegalStateException if session expires during booking
+     *                                  <ul>
+     *                                  <li>passNo is outside 0-7 range</li>
+     *                                  <li>date is null</li>
+     *                                  <li>bookingGroupId is invalid</li>
+     *                                  <li>client is null</li>
+     *                                  </ul>
+     * @throws IOException              if network error occurs
+     * @throws IllegalStateException    if session expires during booking
      * @see #fetchSlots(String, String, LoginResponse)
      * @see OkHttpClient
      */
@@ -408,10 +409,10 @@ public class SlotService {
      * <li>Making authenticated GET request</li>
      * <li>Handling redirects (max 10)</li>
      * <li>Validating successful unbooking via:
-     *   <ul>
-     *   <li>FeedbackDialog confirmation</li>
-     *   <li>Removal of 'interval own' status</li>
-     *   </ul>
+     * <ul>
+     * <li>FeedbackDialog confirmation</li>
+     * <li>Removal of 'interval own' status</li>
+     * </ul>
      * </li>
      * </ol>
      * <p>
@@ -424,13 +425,13 @@ public class SlotService {
      *
      * @param bookingId Unique identifier of booking to cancel (required)
      * @return true if unbooking was confirmed by either:
-     * <ul>
-     * <li>FeedbackDialog confirmation</li>
-     * <li>Removal of 'interval own' status</li>
-     * </ul>
+     *         <ul>
+     *         <li>FeedbackDialog confirmation</li>
+     *         <li>Removal of 'interval own' status</li>
+     *         </ul>
      * @throws IllegalArgumentException if bookingId is <= 0
-     * @throws IOException if network error occurs
-     * @throws IllegalStateException if session expires during unbooking
+     * @throws IOException              if network error occurs
+     * @throws IllegalStateException    if session expires during unbooking
      * @see #bookSlot(int, LocalDate, int, OkHttpClient)
      * @see OkHttpClient
      */
@@ -533,10 +534,10 @@ public class SlotService {
     /**
      * Resolves relative URLs against base URL
      *
-     * @param baseUrl Original request URL (required)
+     * @param baseUrl  Original request URL (required)
      * @param location Location header value (absolute or relative) (required)
      * @return Fully resolved absolute URL
-     * @throws IllegalArgumentException if either parameter is null
+     * @throws IllegalArgumentException        if either parameter is null
      * @throws StringIndexOutOfBoundsException if baseUrl is malformed
      */
     /**
@@ -549,7 +550,7 @@ public class SlotService {
      * <li>Protocol-relative URLs (preserves protocol)</li>
      * </ul>
      *
-     * @param baseUrl The base URL to resolve against (required)
+     * @param baseUrl  The base URL to resolve against (required)
      * @param location The URL to resolve (absolute or relative)
      * @return Fully resolved URL
      * @throws IllegalArgumentException if baseUrl is null or empty

@@ -5,7 +5,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Spring Web MVC configuration for the spa booking application.
+ * Spring Web MVC configuration for the booking application.
  * <p>
  * Configuration Scope:
  * <ul>
@@ -47,37 +47,37 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    /**
-     * Configures path-specific CORS mappings for the application.
-     * <p>
-     * Implementation Details:
-     * <ul>
-     * <li>Separate mappings for /book (POST) and /slots (GET)</li>
-     * <li>Origins restricted to localhost:3737 (frontend dev server)</li>
-     * <li>Content-Type header required for all requests</li>
-     * <li>No credentials support (stateless API)</li>
-     * </ul>
-     * <p>
-     * Production Configuration:
-     * <ul>
-     * <li>Override allowedOrigins via application.properties</li>
-     * <li>Consider adding maxAge for preflight caching</li>
-     * </ul>
-     *
-     * @param registry CorsRegistry to configure mappings
-     * @see org.springframework.web.servlet.config.annotation.CorsRegistration
-     */
-@Override
-public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/book")
-            .allowedOrigins("http://localhost")
-            .allowedMethods("POST")
-            .allowedHeaders("Content-Type");
+        /**
+         * Configures path-specific CORS mappings for the application.
+         * <p>
+         * Implementation Details:
+         * <ul>
+         * <li>Separate mappings for /book (POST) and /slots (GET)</li>
+         * <li>Origins restricted to localhost:3737 (frontend dev server)</li>
+         * <li>Content-Type header required for all requests</li>
+         * <li>No credentials support (stateless API)</li>
+         * </ul>
+         * <p>
+         * Production Configuration:
+         * <ul>
+         * <li>Override allowedOrigins via application.properties</li>
+         * <li>Consider adding maxAge for preflight caching</li>
+         * </ul>
+         *
+         * @param registry CorsRegistry to configure mappings
+         * @see org.springframework.web.servlet.config.annotation.CorsRegistration
+         */
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/book")
+                                .allowedOrigins("http://localhost")
+                                .allowedMethods("POST")
+                                .allowedHeaders("Content-Type");
 
-    registry.addMapping("/slots")
-            .allowedOrigins("http://localhost")
-            .allowedMethods("GET")
-            .allowedHeaders("Content-Type");
-}
+                registry.addMapping("/slots")
+                                .allowedOrigins("http://localhost")
+                                .allowedMethods("GET")
+                                .allowedHeaders("Content-Type");
+        }
 
 }

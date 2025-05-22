@@ -48,7 +48,7 @@
         <appender-ref ref="FILE" />
     </logger>
     <!-- Logger for application -->
-    <logger name="net.kadookie.aptusassist" level="ERROR" additivity="false">
+    <logger name="net.kadookie.aptusassist" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 

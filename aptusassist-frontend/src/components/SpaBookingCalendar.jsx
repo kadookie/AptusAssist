@@ -83,7 +83,7 @@ const SpaBookingCalendar = () => {
     <div className="container mx-auto p-2">
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
-          <h1 className="text-xl font-bold">Spa Calendar</h1>
+          <h1 className="text-xl font-bold">Calendar</h1>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
