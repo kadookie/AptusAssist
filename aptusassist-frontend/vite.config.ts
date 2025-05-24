@@ -31,6 +31,10 @@ export default defineConfig({
     })
   ],
   server: {
-    port: 3737
+    port: 3737,
+        proxy: {
+      '/slots': 'http://localhost:9090', // Proxy to backend
+      '/book': 'http://localhost:9090'
+    }
   }
 });

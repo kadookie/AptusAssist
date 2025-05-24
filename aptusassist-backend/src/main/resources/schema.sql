@@ -5,3 +5,12 @@ CREATE TABLE IF NOT EXISTS slots (
     status VARCHAR(50) NOT NULL,
     UNIQUE (date, pass_no)
 );
+
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    endpoint TEXT NOT NULL,
+    p256dh TEXT NOT NULL,
+    auth TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(endpoint)
+);
