@@ -102,7 +102,7 @@ const SpaBookingCalendar = () => {
               }`}
             disabled={!data?.prevWeekDate}
           >
-            Previous Week
+            Week {data?.currentWeek - 1}
           </button>
           <span className="text-base font-semibold">Week {data?.currentWeek}</span>
           <button
@@ -111,7 +111,7 @@ const SpaBookingCalendar = () => {
               }`}
             disabled={!data?.nextWeekDate}
           >
-            Next Week
+            Week {data?.currentWeek + 1}
           </button>
         </div>
       </div>
