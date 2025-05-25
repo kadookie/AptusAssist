@@ -27,6 +27,7 @@ public class PushSubscription {
     @Column(nullable = false, length = 512)
     private String auth;
 
+    @Builder.Default
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 }

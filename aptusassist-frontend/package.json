@@ -24,7 +24,8 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "vite": "^5.2.0",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "web-push": "^3.6.7"
   },
   "resolutions": {
     "glob": "^9.0.0",

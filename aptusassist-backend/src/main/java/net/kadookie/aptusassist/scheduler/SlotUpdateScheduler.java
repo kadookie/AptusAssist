@@ -6,6 +6,8 @@ import net.kadookie.aptusassist.service.SlotService;
 import net.kadookie.aptusassist.service.SlotDbService;
 import net.kadookie.aptusassist.service.LoginService;
 import net.kadookie.aptusassist.service.NotificationService;
+import net.kadookie.aptusassist.service.PushSenderService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,6 +87,8 @@ public class SlotUpdateScheduler {
     /** Maximum authentication retry attempts */
     private static final int MAX_LOGIN_RETRIES = 3;
 
+    private final PushSenderService pushSenderService;
+
     /** Mapping of pass numbers to time slots, copied from BookingController */
     private static final Map<Integer, String> PASS_NO_TO_TIME = new LinkedHashMap<>();
     static {
@@ -113,6 +117,7 @@ public class SlotUpdateScheduler {
             SlotService bookingService,
             SlotDbService dbService,
             NotificationService notificationService,
+            PushSenderService pushSenderService,
             @Value("${APTUS_USERNAME}") String username,
             @Value("${APTUS_PASSWORD}") String password,
             @Value("${APTUS_WEEKS:3}") int weeksToFetch) {
@@ -120,6 +125,7 @@ public class SlotUpdateScheduler {
         this.bookingService = bookingService;
         this.dbService = dbService;
         this.notificationService = notificationService;
+        this.pushSenderService = pushSenderService;
         this.username = username;
         this.password = password;
         this.weeksToFetch = weeksToFetch;
@@ -212,8 +218,10 @@ public class SlotUpdateScheduler {
                     if (existingStatus != null && !"free".equals(existingStatus)
                             && "free".equals(newStatus)) {
                         String time = PASS_NO_TO_TIME.getOrDefault(Integer.parseInt(newSlot.get("passNo")), "Unknown");
-                        notificationService.sendSlotFreedNotification(
-                                newSlot.get("date"), newSlot.get("passNo"), time);
+                        // notificationService.sendSlotFreedNotification(
+                        // newSlot.get("date"), newSlot.get("passNo"), time);
+
+                        pushSenderService.sendToAll(time, newSlot.get("date"));
                     }
                 }
 

@@ -1,11 +1,11 @@
 package net.kadookie.aptusassist.controller;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import net.kadookie.aptusassist.service.PushSenderService;
 import net.kadookie.aptusassist.service.PushSubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/push")
@@ -13,24 +13,37 @@ import java.util.Map;
 public class PushController {
 
     private final PushSubscriptionService subscriptionService;
+    private final PushSenderService pushSenderService;
 
     @PostMapping("/subscribe")
-    public ResponseEntity<Void> subscribe(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<Void> subscribe(@RequestBody SubscriptionPayload payload) {
         try {
-            Map<String, String> keys = (Map<String, String>) body.get("keys");
-            String endpoint = (String) body.get("endpoint");
-            String p256dh = keys.get("p256dh");
-            String auth = keys.get("auth");
-
-            subscriptionService.saveIfNotExists(endpoint, p256dh, auth);
+            subscriptionService.saveIfNotExists(
+                    payload.getEndpoint(),
+                    payload.getKeys().getP256dh(),
+                    payload.getKeys().getAuth());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            e.printStackTrace(); // 🔍 Add this to see real cause
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @GetMapping("/subscriptions")
-    public ResponseEntity<?> getAllSubscriptions() {
-        return ResponseEntity.ok(subscriptionService.getAll());
+    @PostMapping("/test")
+    public ResponseEntity<Void> test() {
+        pushSenderService.sendToAll("Test Notification", "This is a test push message.");
+        return ResponseEntity.ok().build();
+    }
+
+    @Data
+    static class SubscriptionPayload {
+        private String endpoint;
+        private SubscriptionKeys keys;
+    }
+
+    @Data
+    static class SubscriptionKeys {
+        private String p256dh;
+        private String auth;
     }
 }
